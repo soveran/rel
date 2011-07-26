@@ -27,10 +27,10 @@ class Bandicoot
 
   # Mapper for Bandicoot relations.
   class Rel
-    @@fields = {}
+    @@fields = Hash.new { |hash, key| hash[key] = {} }
 
     def self.field(name, type)
-      @@fields[name] = type
+      @@fields[self.name][name] = type
       attr_accessor name
     end
 
@@ -49,7 +49,7 @@ class Bandicoot
       header.map do |field|
         field.split(":").first
       end.zip(values).each do |field, value|
-        rel.send(:"#{field}=", transform(value, @@fields[field.to_sym]))
+        rel.send(:"#{field}=", transform(value, @@fields[self.name][field.to_sym]))
       end
 
       rel
@@ -90,7 +90,7 @@ class Bandicoot
     end
 
     def fields
-      @@fields
+      @@fields[self.class.name]
     end
   end
 end

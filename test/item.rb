@@ -8,6 +8,10 @@ class Item < Bandicoot::Rel
   field :ts, :long
 end
 
+class Other < Bandicoot::Rel
+  field :conflict, :string
+end
+
 head = [["id:int", "pid:int", "ts:long"]]
 
 single_item_csv = CSV.generate do |csv|
@@ -38,4 +42,9 @@ test "item from array" do
   item = Item.from_array(CSV.parse(single_item_csv))
 
   assert_equal item.to_csv, single_item_csv
+end
+
+test "shouldn't have conflicts with other classes" do
+  item = Item.new(id: 1, pid: 0, ts: 1310084883)
+  other = Other.new(conflict: "None")
 end
