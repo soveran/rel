@@ -4,7 +4,7 @@ NAME
       bandicoot -- Bandicoot client.
 
 SYNOPSIS
-      db = Bandicoot.new(<url>, <port>)
+      db = Bandicoot.new(<host>, <port>)
       db.post(<bandicoot_fn_symbol>, <data>)
       db.get(<bandicoot_fn_symbol>)
 
@@ -17,7 +17,7 @@ USAGE
 
           db = Bandicoot.new
 
-      Bandicoot receives two parameters: url, which defaults to "localhost",
+      Bandicoot receives two parameters: host, which defaults to "localhost",
       and port, which defaults to 12345. It will connect via HTTP to send POST
       and GET requests to the server.
 

@@ -4,10 +4,12 @@ require "uri"
 
 # Client for connecting to the Bandicoot server.
 class Bandicoot
+  VERSION = "0.0.1"
+
   attr :http
 
-  def initialize(url = "localhost", port = 12345)
-    @http = Net::HTTP.new(url, port)
+  def initialize(host = "localhost", port = 12345)
+    @http = Net::HTTP.new(host, port)
   end
 
   def get(what)
