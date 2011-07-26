@@ -1,0 +1,62 @@
+BANDICOOT(1)
+
+NAME
+      bandicoot -- Bandicoot client.
+
+SYNOPSIS
+      db = Bandicoot.new(<url>, <port>)
+      db.post(<bandicoot_fn_symbol>, <data>)
+      db.get(<bandicoot_fn_symbol>)
+
+DESCRIPTION
+      Bandicoot is a client library for the Bandicoot relational algebra
+      database.
+
+USAGE
+      Create a client:
+
+          db = Bandicoot.new
+
+      Bandicoot receives two parameters: url, which defaults to "localhost",
+      and port, which defaults to 12345. It will connect via HTTP to send POST
+      and GET requests to the server.
+
+      If we have this server side Bandicoot program:
+
+          # cat foo.b
+          rel Items {
+            id: int,
+            pid: int,
+            ts: long,
+          }
+
+          queue: Items;
+
+          fn push(i: Items) {
+            queue += i - queue project(id);
+          }
+
+          fn list(): Items {
+            return queue;
+          }
+
+      Then we can use Bandicoot as follows:
+
+          db.post(:push, some_csv)
+          db.get(:list)             #=> Returns an array of results
+
+      It also provides a model-like class for mapping Bandicoot rels:
+
+          class Item < Bandicoot::Rel
+            field :id, :int
+            field :pid, :int
+            field :ts, :long
+          end
+
+      Now you can do:
+
+          item = Item.new(id: 1, pid: 0, ts: 1310084883)
+          db.post(:push, item.to_csv)
+
+INSTALLATION
+      $ gem install bandicoot

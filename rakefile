@@ -1,0 +1,11 @@
+task :test do
+  require "cutest"
+
+  Cutest.run(Dir["test/*.rb"])
+end
+
+task :start do
+  exec "bandicoot start -p 12345 -d data/volume -c data/sample.b -s data/volume/sample"
+end
+
+task :default => :test
