@@ -47,3 +47,7 @@ fn fetch(p: Process): Items {
 fn delete(i: Items) {
   queue = queue - i;
 }
+
+fn recent(t: long): Items {
+  return queue select(ts > t);
+}

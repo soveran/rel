@@ -1,6 +1,7 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
 require "bandicoot"
+require "pp"
 
 db = Bandicoot.new
 
@@ -19,10 +20,21 @@ prepare do
 end
 
 test "get" do
-  assert_equal head, db.get(:list)
+  assert_equal head, CSV.parse(db.client.get(:list))
 end
 
 test "push items to the queue" do
-  assert_equal [], db.post(:push, list_csv)
-  assert_equal list, db.get(:list)
+  assert_equal "", db.client.post(:push, list_csv)
+  assert_equal list_csv, db.client.get(:list)
+end
+
+test "primitive types in parameters" do
+  db.post("push", [{"id:int" => 1,
+                    "pid:int" => 1,
+                    "ts:long" => 100}])
+  db.post("push", [{"id:int" => 2,
+                    "pid:int" => 2,
+                    "ts:long" => 200}])
+
+  assert_equal 2, db.get("recent?t=150").first["id:int"]
 end

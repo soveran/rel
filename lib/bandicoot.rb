@@ -2,95 +2,102 @@ require "csv"
 require "net/http"
 require "uri"
 
-# Client for connecting to the Bandicoot server.
 class Bandicoot
   VERSION = "0.0.1"
 
-  attr :http
+  # Basic HTTP client that sends and receives CSV.
+  class Client
+    attr :http
 
-  def initialize(host = "localhost", port = 12345)
-    @http = Net::HTTP.new(host, port)
+    def initialize(host, port)
+      @http = Net::HTTP.new(host, port)
+    end
+
+    def get(fn)
+      reply(http.get("/#{fn}"))
+    end
+
+    def post(fn, csv)
+      reply(http.post("/#{fn}", csv))
+    end
+
+    def reply(res)
+      unless res.code == "200"
+        raise RuntimeError, res.inspect
+      end
+
+      res.body
+    end
   end
 
-  def get(what)
-    reply(http.get("/#{what}"))
+  attr :client
+
+  # def initialize(host = "localhost", port = 12345)
+  def initialize(url = "http://localhost:12345")
+    url = URI.parse(url)
+    @client = Client.new(url.host, url.port)
   end
 
-  def post(where, what)
-    reply(http.post("/#{where}", what))
+  def get(fn)
+    _csv_to_hashes(client.get(fn))
   end
 
-  def reply(res)
-    raise RuntimeError, res.inspect unless res.code == "200"
-    CSV.parse(res.body)
+  def post(fn, hashes)
+    _csv_to_hashes(client.post(fn, _hashes_to_csv(hashes.dup)))
   end
 
-  # Mapper for Bandicoot relations.
-  class Rel
-    @@fields = Hash.new { |hash, key| hash[key] = {} }
+private
 
-    def self.field(name, type)
-      @@fields[self.name][name] = type
-      attr_accessor name
+  def _csv_to_hashes(csv)
+    rows = CSV.parse(csv)
+    head = rows.shift
+
+    rows.map do |row|
+      _row_to_hash(row, head)
     end
+  end
 
-    def self.from_csv(csv)
-      from_array(CSV.parse(csv))
-    end
+  def _hashes_to_csv(hashes)
+    first = hashes.shift
 
-    def self.from_array(list)
-      return ArgumentError unless list.size == 2
+    CSV.generate do |csv|
+      csv << first.keys
+      csv << first.values
 
-      header = list[0]
-      values = list[1]
-
-      rel = new
-
-      header.map do |field|
-        field.split(":").first
-      end.zip(values).each do |field, value|
-        rel.send(:"#{field}=", transform(value, @@fields[self.name][field.to_sym]))
-      end
-
-      rel
-    end
-
-    def self.transform(value, type)
-      case type
-      when :int then value.to_i
-      when :long then value.to_i
-      when :real then value.to_f
-      else value
+      hashes.each do |hash|
+        csv << hash.values
       end
     end
+  end
 
-    def initialize(attrs = {})
-      attrs.each do |field, value|
-        send(:"#{field}=", value)
-      end
+  def _row_to_hash(row, head)
+    record = []
+
+    head.zip(row) do |field, value|
+      record << field
+      record << _cast(value, _type_of(field))
     end
 
-    def to_csv
-      CSV.generate do |csv|
-        csv << header
-        csv << values
-      end
-    end
+    Hash[*record]
+  end
 
-    def values
-      fields.map do |field, _|
-        send(field)
-      end
+  def _record_to_csv(record)
+    CSV.generate do |csv|
+      csv << record.keys
+      csv << record.values
     end
+  end
 
-    def header
-      fields.map do |field, type|
-        "#{field}:#{type}"
-      end
-    end
+  def _type_of(field)
+    field.split(":").last
+  end
 
-    def fields
-      @@fields[self.class.name]
+  def _cast(value, type)
+    case type
+    when "int" then value.to_i
+    when "long" then value.to_i
+    when "real" then value.to_f
+    else value
     end
   end
 end
