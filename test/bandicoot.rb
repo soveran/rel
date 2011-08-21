@@ -1,9 +1,9 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
-require "bandicoot"
+require "rel"
 require "pp"
 
-db = Bandicoot.new
+db = Rel.new
 
 head = [["id:int", "pid:int", "ts:long"]]
 

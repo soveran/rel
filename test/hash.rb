@@ -1,8 +1,8 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
-require "bandicoot"
+require "rel"
 
-db = Bandicoot.new
+db = Rel.new
 
 prepare do
   db.get(:clear)

@@ -1,6 +1,6 @@
 # Mapper for Bandicoot relations.
-class Bandicoot
-  class Rel
+class Rel
+  class Model
     @@fields = Hash.new { |hash, key| hash[key] = {} }
 
     def self.field(name, type)

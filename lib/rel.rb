@@ -2,7 +2,7 @@ require "csv"
 require "net/http"
 require "uri"
 
-class Bandicoot
+class Rel
   VERSION = "0.0.1"
 
   # Basic HTTP client that sends and receives CSV.

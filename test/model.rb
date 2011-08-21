@@ -1,15 +1,15 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
-require "bandicoot"
-require "bandicoot/rel"
+require "rel"
+require "rel/model"
 
-class Item < Bandicoot::Rel
+class Item < Rel::Model
   field :id, :int
   field :pid, :int
   field :ts, :long
 end
 
-class Other < Bandicoot::Rel
+class Other < Rel::Model
   field :conflict, :string
 end
 

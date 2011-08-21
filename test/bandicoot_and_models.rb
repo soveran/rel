@@ -1,9 +1,9 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
-require "bandicoot"
-require "bandicoot/rel"
+require "rel"
+require "rel/model"
 
-class Item < Bandicoot::Rel
+class Item < Rel::Model
   field :id, :int
   field :pid, :int
   field :ts, :long
@@ -13,7 +13,7 @@ class Item < Bandicoot::Rel
   end
 end
 
-db = Bandicoot.new
+db = Rel.new
 
 prepare do
   db.get(:clear)
