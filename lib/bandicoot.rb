@@ -32,7 +32,6 @@ class Bandicoot
 
   attr :client
 
-  # def initialize(host = "localhost", port = 12345)
   def initialize(url = "http://localhost:12345")
     url = URI.parse(url)
     @client = Client.new(url.host, url.port)
