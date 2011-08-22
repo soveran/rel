@@ -1,23 +1,23 @@
 BANDICOOT(1)
 
 NAME
-      bandicoot -- Bandicoot client.
+      rel -- Bandicoot client.
 
 SYNOPSIS
-      db = Bandicoot.new(<host>, <port>)
+      db = Rel.new(<host>, <port>)
       db.post(<bandicoot_fn_symbol>, <data>)
       db.get(<bandicoot_fn_symbol>)
 
 DESCRIPTION
-      Bandicoot is a client library for the Bandicoot relational algebra
+      Rel is a client library for the Bandicoot relational algebra
       database.
 
 USAGE
       Create a client:
 
-          db = Bandicoot.new
+          db = Rel.new
 
-      Bandicoot receives two parameters: host, which defaults to "localhost",
+      Rel receives two parameters: host, which defaults to "localhost",
       and port, which defaults to 12345. It will connect via HTTP to send POST
       and GET requests to the server.
 
@@ -40,14 +40,14 @@ USAGE
             return queue;
           }
 
-      Then we can use Bandicoot as follows:
+      Then we can use Rel as follows:
 
           db.post(:push, some_csv)
           db.get(:list)             #=> Returns an array of results
 
       It also provides a model-like class for mapping Bandicoot rels:
 
-          class Item < Bandicoot::Rel
+          class Item < Rel::Model
             field :id, :int
             field :pid, :int
             field :ts, :long
@@ -59,4 +59,4 @@ USAGE
           db.post(:push, item.to_csv)
 
 INSTALLATION
-      $ gem install bandicoot
+      $ gem install rel
